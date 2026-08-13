@@ -6,6 +6,7 @@ This repository contains:
 
 * `wildlands_pcore_wrapper.py` — launches Wildlands on P-cores only.
 * `wildlands_startup_logger_v2.py` — logs the normal startup without changing CPU affinity.
+* `wildlands_deep_logger_v4.py` — performs a deeper startup analysis with threads, I/O and Windows tracing.
 
 ---
 
@@ -102,6 +103,69 @@ If you share a log, please include your exact CPU model.
 
 ---
 
+## Deep Startup Logger V4
+
+The V4 logger is for a **deeper investigation of what `GRW.exe` is actually doing during the splash screen**.
+
+It still launches Wildlands normally through Steam and **does not change CPU affinity**.
+
+Install `psutil` if needed:
+
+```powershell
+python -m pip install psutil
+```
+
+Put these files next to `GRW.exe`:
+
+```text
+wildlands_deep_logger_v4.py
+launch_wildlands_deep_logger_v4.bat
+```
+
+Then run:
+
+```text
+launch_wildlands_deep_logger_v4.bat
+```
+
+Windows may request administrator rights for system tracing.
+
+Each test creates a folder containing:
+
+```text
+telemetry.csv
+events.log
+summary.txt
+manifest.json
+wildlands.etl
+```
+
+The V4 records additional information such as:
+
+* individual GRW.exe thread activity
+* context switches
+* loaded modules
+* open files
+* network activity
+* Steam / Ubisoft / EAC processes
+* Windows ETW CPU call stacks
+
+The `wildlands.etl` file can be opened with **Windows Performance Analyzer** to inspect where `GRW.exe` actually spends CPU time.
+
+### Optional Process Monitor trace
+
+If `Procmon64.exe` is placed next to the V4 logger, it can also create:
+
+```text
+wildlands_procmon.pml
+```
+
+This provides additional file system and registry tracing.
+
+If you share a V4 trace, please include your exact CPU model.
+
+---
+
 # Français
 
 ## Wrapper P-Core
@@ -184,3 +248,66 @@ Le logger crée automatiquement un fichier CSV contenant :
 * temps de démarrage
 
 Si vous partagez un log, indiquez également votre modèle exact de processeur.
+
+---
+
+## Deep Startup Logger V4
+
+Le logger V4 permet d'aller **beaucoup plus loin dans l'analyse de ce que fait réellement `GRW.exe` pendant le splash screen**.
+
+Il lance toujours Wildlands normalement via Steam et **ne modifie pas l'affinité CPU**.
+
+Installez `psutil` si nécessaire :
+
+```powershell
+python -m pip install psutil
+```
+
+Placez ces fichiers à côté de `GRW.exe` :
+
+```text
+wildlands_deep_logger_v4.py
+launch_wildlands_deep_logger_v4.bat
+```
+
+Puis lancez :
+
+```text
+launch_wildlands_deep_logger_v4.bat
+```
+
+Windows peut demander les droits administrateur pour la capture système.
+
+Chaque test crée un dossier contenant notamment :
+
+```text
+telemetry.csv
+events.log
+summary.txt
+manifest.json
+wildlands.etl
+```
+
+La V4 enregistre également :
+
+* activité individuelle des threads de GRW.exe
+* changements de contexte
+* modules chargés
+* fichiers ouverts
+* activité réseau
+* processus Steam / Ubisoft / EAC
+* piles d'appels CPU via ETW
+
+Le fichier `wildlands.etl` peut être ouvert avec **Windows Performance Analyzer** afin d'analyser où `GRW.exe` passe réellement son temps CPU.
+
+### Trace Process Monitor optionnelle
+
+Si vous placez `Procmon64.exe` à côté du logger V4, il peut également créer :
+
+```text
+wildlands_procmon.pml
+```
+
+Ce fichier permet une analyse supplémentaire des accès fichiers et registre.
+
+Si vous partagez une trace V4, indiquez également votre modèle exact de processeur.
